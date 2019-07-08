@@ -51,7 +51,7 @@ import (
 	"os"
 	"strings"
 
-	. "github.com/ChimeraCoder/gojson"
+	. "github.com/lvsz1/gojson"
 )
 
 var (
@@ -108,7 +108,7 @@ func main() {
 		parser = ParseYaml
 	}
 
-	if output, err := Generate(input, parser, *name, *pkg, tagList, *subStruct, convertFloats); err != nil {
+	if output, err := Generate(input, parser, *name, tagList, *subStruct, convertFloats); err != nil {
 		fmt.Fprintln(os.Stderr, "error parsing", err)
 		os.Exit(1)
 	} else {
