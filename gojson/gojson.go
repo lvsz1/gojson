@@ -51,7 +51,7 @@ import (
 	"os"
 	"strings"
 
-	. "github.com/lvsz1/gojson"
+	. "github.com/ChimeraCoder/gojson"
 )
 
 var (

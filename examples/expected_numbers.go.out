@@ -1,5 +1,3 @@
-package gojson
-
 type Stats struct {
 	Count  int     `yaml:"count"`
 	Mean   float64 `yaml:"mean"`

@@ -1,5 +1,3 @@
-package gojson
-
 type Stats struct {
 	Count int64   `json:"count"`
 	Mean  float64 `json:"mean"`
