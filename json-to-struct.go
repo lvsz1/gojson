@@ -198,7 +198,7 @@ func readFile(input io.Reader) ([]byte, error) {
 }
 
 // Generate a struct definition given a JSON string representation of an object and a name structName.
-func Generate(input io.Reader, parser Parser, structName, pkgName string, tags []string, subStruct bool, convertFloats bool) ([]byte, error) {
+func Generate(input io.Reader, parser Parser, structName string, tags []string, subStruct bool, convertFloats bool) ([]byte, error) {
 	var subStructMap map[string]string = nil
 	if subStruct {
 		subStructMap = make(map[string]string)
@@ -211,14 +211,16 @@ func Generate(input io.Reader, parser Parser, structName, pkgName string, tags [
 		return nil, err
 	}
 
+	//格式化Struct Name
+	structName = FmtFieldName(structName)
+
 	switch iresult := iresult.(type) {
 	case map[interface{}]interface{}:
 		result = convertKeysToStrings(iresult)
 	case map[string]interface{}:
 		result = iresult
 	case []interface{}:
-		src := fmt.Sprintf("package %s\n\ntype %s %s\n",
-			pkgName,
+		src := fmt.Sprintf("type %s %s\n",
 			structName,
 			typeForValue(iresult, structName, tags, subStructMap, convertFloats))
 		formatted, err := format.Source([]byte(src))
@@ -230,8 +232,7 @@ func Generate(input io.Reader, parser Parser, structName, pkgName string, tags [
 		return nil, fmt.Errorf("unexpected type: %T", iresult)
 	}
 
-	src := fmt.Sprintf("package %s\ntype %s %s}",
-		pkgName,
+	src := fmt.Sprintf("type %s %s}",
 		structName,
 		generateTypes(result, structName, tags, 0, subStructMap, convertFloats))
 
@@ -292,13 +293,11 @@ func generateTypes(obj map[string]interface{}, structName string, tags []string,
 
 				if sub != "" {
 					subName := sub
-
 					if subStructMap != nil {
 						if val, ok := subStructMap[sub]; ok {
 							subName = val
 						} else {
-							subName = fmt.Sprintf("%v_sub%v", structName, len(subStructMap)+1)
-
+							subName = fmt.Sprintf("%v", FmtFieldName(key))
 							subStructMap[sub] = subName
 						}
 					}
@@ -314,8 +313,7 @@ func generateTypes(obj map[string]interface{}, structName string, tags []string,
 				if val, ok := subStructMap[sub]; ok {
 					subName = val
 				} else {
-					subName = fmt.Sprintf("%v_sub%v", structName, len(subStructMap)+1)
-
+					subName = fmt.Sprintf("%v", FmtFieldName(key))
 					subStructMap[sub] = subName
 				}
 			}
@@ -328,8 +326,7 @@ func generateTypes(obj map[string]interface{}, structName string, tags []string,
 				if val, ok := subStructMap[sub]; ok {
 					subName = val
 				} else {
-					subName = fmt.Sprintf("%v_sub%v", structName, len(subStructMap)+1)
-
+					subName = fmt.Sprintf("%v", FmtFieldName(key))
 					subStructMap[sub] = subName
 				}
 			}
